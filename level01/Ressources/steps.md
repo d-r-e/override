@@ -79,4 +79,5 @@ int32_t main(int32_t argc, char** argv, char** envp)
 080485b5  return eax_2
 ```
 
-WTF is this using *envp
+why is this using *envp I don't comprehend
+
