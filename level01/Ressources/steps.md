@@ -1,5 +1,5 @@
 
-- 1  
+- Extract the binary file
 scp -P 4242 level01@10.11.200.20:/home/users/level01/level01 bin/
 
 - Disassemble main (on binary ninja)
@@ -78,3 +78,5 @@ int32_t main(int32_t argc, char** argv, char** envp)
 080485aa          eax_2 = 0
 080485b5  return eax_2
 ```
+
+WTF is this using *envp
