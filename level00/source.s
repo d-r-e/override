@@ -34,3 +34,6 @@ Dump of assembler code for function main:
    0x0804851f <+139>:   ret    
 End of assembler dump.
 
+
+printf "%d\n", 0x149c
+  5276
